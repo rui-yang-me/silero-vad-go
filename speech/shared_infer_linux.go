@@ -1,4 +1,4 @@
-//go:build linux
+//go:build !darwin
 
 package speech
 
@@ -24,9 +24,9 @@ func (dc *DetectorContext) infer(pcm []float32) (float32, error) {
 
 	// 创建PCM输入张量
 	var pcmValue *C.OrtValue
-	pcmInputDims := []C.longlong{
+	pcmInputDims := []C.long{
 		1,
-		C.longlong(len(pcm)),
+		C.long(len(pcm)),
 	}
 	status := C.OrtApiCreateTensorWithDataAsOrtValue(
 		dc.model.api,
@@ -46,7 +46,7 @@ func (dc *DetectorContext) infer(pcm []float32) (float32, error) {
 
 	// 创建状态输入张量（使用上下文的独立状态）
 	var stateValue *C.OrtValue
-	stateNodeInputDims := []C.longlong{2, 1, 128}
+	stateNodeInputDims := []C.long{2, 1, 128}
 	status = C.OrtApiCreateTensorWithDataAsOrtValue(
 		dc.model.api,
 		dc.model.memoryInfo,
@@ -65,7 +65,7 @@ func (dc *DetectorContext) infer(pcm []float32) (float32, error) {
 
 	// 创建采样率输入张量
 	var rateValue *C.OrtValue
-	rateInputDims := []C.longlong{1}
+	rateInputDims := []C.long{1}
 	rate := []C.int64_t{C.int64_t(dc.model.cfg.SampleRate)}
 	status = C.OrtApiCreateTensorWithDataAsOrtValue(
 		dc.model.api,
